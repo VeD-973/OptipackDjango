@@ -239,3 +239,33 @@ footer a {
 footer a:hover {
     text-decoration: underline;
 }
+
+
+/* Add this to your login.css */
+
+.button-group {
+    display: flex;
+    flex-direction: column; /* Align buttons vertically */
+    align-items: center; /* Center align buttons horizontally */
+    gap: 50px; /* Space between buttons */
+    margin-top: 20px;
+}
+
+.action-button {
+    background-color: #000; /* Black background */
+    color: #fff; /* White text */
+    border: none;
+    padding: 15px 40px; /* Increased padding for larger buttons */
+    text-align: center;
+    text-decoration: none;
+    font-size: 18px; /* Increased font size */
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%; /* Make the buttons wider */
+    max-width: 75%; /* Maximum width for buttons */
+    border-radius: 5px; /* Optional: add rounded corners */
+}
+
+.action-button:hover {
+    background-color: #333; /* Dark grey on hover */
+}

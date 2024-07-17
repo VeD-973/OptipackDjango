@@ -12,6 +12,35 @@ import random
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from home.utils import save_data_to_files,DataProcess,perform_computation
+from copy import deepcopy
+import pandas as pd
+import math
+
+truck_specs = {
+    "General Purpose container 20'": {
+        "length_container":5900,
+        "width_container":2352,
+        "height_container":2393,
+        "max_weight": 32500,
+        # Add more specifications as needed
+    },
+    "General Purpose container 40'": {
+        "length_container":12032,
+        "width_container":2352,
+        "height_container":2395,
+        "max_weight": 32500,
+        # Add more specifications as needed
+    },
+    "High - Cube General Purpose container 40'": {
+        "length_container":12032,
+        "width_container":2432,
+        "height_container":2700,
+        "max_weight": 32500,
+    },
+    # Add more specifications as needed
+}
+
 
 def generate_unique_user_id():
     while True:
@@ -29,7 +58,7 @@ def freeTrial(request):
     return render(request, 'freeTrial.html')
 
 def joinCreateOrganisation(request):
-    return render(request, 'login.html')  # Assuming this is your join/create organisation template
+    return render(request, 'loginSignup.html')  # Assuming this is your join/create organisation template
 
 
 def additionalInformation(request):
@@ -144,3 +173,195 @@ def add_container(request):
 @custom_login_required
 def manageUsers(request):
     return render(request, 'manageUsers.html')
+
+
+def freeOutput(request):
+    if request.method == 'POST':
+        num_types = request.POST.get('numTypes')
+        total_containers = request.POST.get('totalContainers')
+        num_containers = int(request.POST.get('numContainers'))
+
+        # print("num_c",num_containers)
+
+        # Collect box details
+        box_details = []
+        for i in range(int(num_types)):
+            box = {
+                'Gross Weight (in KGs)': request.POST.get(f'grossWeight{i}'),
+                'Net Weight (in KGs)': request.POST.get(f'netWeight{i}'),
+                'Volume (in m^3)': request.POST.get(f'volume{i}'),
+                'Temperature (in deg  C)': request.POST.get(f'temperature{i}'),
+                'Length (in mm)': request.POST.get(f'length{i}'),
+                'Width (in mm)': request.POST.get(f'width{i}'),
+                'Height (in mm)': request.POST.get(f'height{i}'),
+                'Number of Cases': request.POST.get(f'numberOfCases{i}'),
+                'Rotation Allowed (1 - YES, 0 - NO)': 1 if request.POST.get(f'rotationAllowed{i}') == 'on' else 0
+            }
+            box_details.append(box)
+
+        # Create DataFrame
+        df = pd.DataFrame(box_details)
+        # Collect container details
+        container_data = {}
+        for i in range(int(total_containers)):
+            container_type = request.POST.get(f'containerType{i+1}')
+            # if container_type == "Custom Container":
+            #     container = {
+            #         'type': container_type,
+            #         'length': request.POST.get('customLength'),
+            #         'width': request.POST.get('customWidth'),
+            #         'height': request.POST.get('customHeight'),
+            #         'max_capacity': request.POST.get('customMaxCapacity')
+            #     }
+            # else:
+            #     container = {'type': container_type}
+            # container_details.append(container)
+            if container_type == "Custom Container":
+                custom_length = int(request.POST.get('customLength'))
+                custom_width = int(request.POST.get('customWidth'))
+                custom_height = int(request.POST.get('customHeight'))
+                custom_max_weight = int(request.POST.get('customMaxWeight'))
+                truck_specs["Custom Container"] = {
+                    'length_container': custom_length,
+                    'width_container': custom_width,
+                    'height_container': custom_height,
+                    'max_weight': custom_max_weight
+                }
+            container_count = len(total_containers)
+            container_data[container_type] = num_containers
+
+        # print(truck_specs)
+        print(container_data)
+        # container_data = {}
+
+        # for i in range(1, total_containers + 1):
+        #     container_type = request.POST[f'containerType{i}']
+        #     if container_type == "Custom Container":
+        #         custom_length = int(request.POST['customLength'])
+        #         custom_width = int(request.POST['customWidth'])
+        #         custom_height = int(request.POST['customHeight'])
+        #         custom_max_weight = int(request.POST['customMaxWeight'])
+        #         truck_specs["Custom Container"] = {
+        #             'length_container': custom_length,
+        #             'width_container': custom_width,
+        #             'height_container': custom_height,
+        #             'max_weight': custom_max_weight
+        #         }
+        #     container_count = int(request.POST[f'containerCount{i}'])
+        #     container_data[container_type] = container_count
+
+        # df = pd.read_excel(file)
+        save_data_to_files(df, container_data)  # Assuming you have a function for this
+        data = deepcopy(df)
+        df_storer = []
+        img_paths = []
+        threed_boxes= []
+        container_list = []
+        packd_list = []
+        sku_info = []
+        vol_curr_list = []
+        perc_wasted_list = []
+        vol_container_list = []
+        num_placed = [0]*len(df)
+        outer_index = 0
+        box_info =  []
+        rem_Strip_calc = []
+        rem_boxes= []
+        
+        
+
+
+        for keys, values in container_data.items():
+            selected_truck_spec = truck_specs.get(keys, {})
+            if outer_index == 0:
+                df, container_toFit, strip_list = DataProcess(df, selected_truck_spec, 1, 1, data)
+                for i in range(len(df)):
+                    rem_Strip_calc.append(df['Rem_Strips'][i])
+                    rem_boxes.append(df['Rem_Boxes'][i])
+                
+            else:
+                df, container_toFit, strip_list = DataProcess(df, selected_truck_spec, 1, 2, data)
+
+            roll = values
+            # print(df)
+
+            index_ = 0
+            prev = -1
+            while roll > 0:
+                filename, df,packaging_density,vol_occ_curr,perc_wasted,vol_container,box_coords, container_inf = perform_computation(df, container_toFit, strip_list, keys, index_)
+                curr = []
+                # num_placed.append((df['TotalNumStrips'][index_]-df['Rem_Strips'][index_])*df['NumOfBoxesPerStrip'][index_])
+                for i in range(len(df)):
+                    # print(df)
+                    # if(prev==-1):
+                    #     prev = df['Rem_Strips'][i]
+                    #     num_placed[i] = (df['TotalNumStrips'][i]-df['Rem_Strips'][i])*df['NumOfBoxesPerStrip'][i]
+                   
+                    
+                    # if(prev!=df['Rem_Strips'][i] and df['Rem_Strips'][i]!=0):
+                    #     num_placed[i] = (df['TotalNumStrips'][i]-df['Rem_Strips'][i])*df['NumOfBoxesPerStrip'][i]
+                    # box_info.append()
+                    # if roll == 1:
+                    #     curr.append((rem_Strip_calc[i] - df['Rem_Strips'][i])*df['NumOfBoxesPerStrip'][i] + rem_boxes[i])
+                    # else:   
+                    #     curr.append((rem_Strip_calc[i] - df['Rem_Strips'][i])*df['NumOfBoxesPerStrip'][i])
+                    if df['Rem_Boxes'][i] != rem_boxes[i]:
+                        curr.append((rem_Strip_calc[i] - df['Rem_Strips'][i])*df['NumOfBoxesPerStrip'][i] + rem_boxes[i])
+                    else:
+                        curr.append((rem_Strip_calc[i] - df['Rem_Strips'][i])*df['NumOfBoxesPerStrip'][i])
+
+                        
+                    rem_Strip_calc[i] = df['Rem_Strips'][i]
+                    # num_placed[i] = (df['TotalNumStrips'][i]-df['Rem_Strips'][i])*df['NumOfBoxesPerStrip'][i] + df['Rem_Boxes'][i]
+                box_info.append(curr)
+                
+                packaging_density = math.trunc(packaging_density*100)
+                # print(packaging_density)
+                vol_occ_curr = round(vol_occ_curr, 3)
+                perc_wasted = round(perc_wasted, 3)
+                vol_container = round(vol_container*pow(10,-9), 3)
+
+                packd_list.append(packaging_density)
+                vol_curr_list.append(vol_occ_curr)
+                perc_wasted_list.append(perc_wasted)
+                vol_container_list.append(vol_container)
+                threed_boxes.append(box_coords)
+                container_list.append(container_inf)
+                df_storer.append(df.to_html(classes='data'))
+                index_ += 1
+                roll -= 1
+                img_paths.append(filename)
+
+            outer_index += 1
+
+        # print(img_paths)
+        
+        # container_count = len(total_containers)  # Number of containers
+        distinct_colors = ['red', 'blue', 'yellow', 'orange', 'green', 'violet', 'white', 'indigo', 'cyan', 'magenta', 'lime', 'pink', 'teal', 'lavender', 'brown', 'gray', 'black']
+        for i in range(len(df)):
+            sku_info.append([
+                df['BoxNumber'][i]+1,
+                df['Length'][i],
+                df['Width'][i],
+                df['Height'][i],
+                df['NumOfBoxesPerStrip'][i]
+            ])
+        # print(box_info)
+        container_indices = range(1,num_containers+1)
+        context = {
+            'packaging_density': packd_list,
+            'vol_occ_curr': vol_curr_list,
+            'vol_container':vol_container_list,
+            'container_type' : container_type,
+            'container_indices' : container_indices,
+            'threed_paths': threed_boxes,
+            'container_inf' : container_list,
+            'num_skus': range(1,len(df)+1),
+            'colors' : distinct_colors,
+            'sku_info':sku_info,
+            'box_info':box_info
+            
+        }
+        # print(num_placed)
+        return render(request, 'freeOutput.html', context)  # Redirect to a success page
+    return render(request, 'freeOutput.html')

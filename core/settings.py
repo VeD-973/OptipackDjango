@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-5+)gw8)7+mvtcs8=91a0qjfc1r)atd6lp6)vk2xgsx%^!(1(m!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['13.233.179.38']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -79,13 +80,27 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+#for local machine 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.mysql",
+#         "NAME": "containerbuilder3d",
+#         "USER": "root",
+#         "PASSWORD": "1234",
+#         "HOST": "127.0.0.1",
+#         "PORT": "3306",
+#     }
+# }
+
+#for aws
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "containerbuilder3d",
-        "USER": "root",
-        "PASSWORD": "1234",
-        "HOST": "127.0.0.1",
+        "NAME": "optipack3d",
+        "USER": "admin",
+        "PASSWORD": "optipack3d",
+        "HOST": "djangodb.ctciugsk4l54.ap-south-1.rds.amazonaws.com",
         "PORT": "3306",
     }
 }
@@ -130,7 +145,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+
+#for local machine 
+# STATIC_ROOT ='/staticfiles/'
+
+
+#for aws
+STATIC_ROOT = os.path.join(BASE_DIR, 'static') 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

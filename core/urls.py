@@ -29,5 +29,6 @@ urlpatterns = [
     path('profile/', profile, name='profile'),
     path('logout/', logout_view, name='logout'),
     path('manageUsers/', manageUsers, name='manageUsers'),
-    path('additionalInformation/', additionalInformation, name='additionalInformation')
+    path('additionalInformation/', additionalInformation, name='additionalInformation'),
+    path('freeOutput/', freeOutput, name='freeOutput')
 ]

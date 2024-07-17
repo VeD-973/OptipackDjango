@@ -3,3 +3,5 @@ sqlparse
 mysqlclient
 json
 pillow
+matplotlib
+pandas

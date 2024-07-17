@@ -1,14 +1,731 @@
+<!-- {%load static%}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Page Title</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
-    <script src='main.js'></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings Page</title>
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css" rel="stylesheet">
+    <style>
+        .input-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .input-row label {
+            flex: 1 0 30%;
+            min-width: 150px;
+            margin-right: 10px;
+        }
+
+        .input-row input, .input-row select {
+            flex: 1 0 30%;
+            min-width: 150px;
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        .container-form {
+            padding: 10px 100px;
+        }
+
+        .container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .container form {
+            margin-bottom: 20px;
+        }
+
+        .autofill-button {
+            flex: 1 0 100%;
+            margin: 4px;
+            min-width: 100px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background-color: #ddd;
+            color: #555;
+            text-align: center;
+        }
+
+        .autofill-button:hover {
+            background-color: #767676;
+            color: white;
+        }
+
+        .input-row .input {
+            padding: 5px;
+            margin: 5px;
+        }
+
+        .container-types {
+            margin-top: 20px;
+        }
+
+        .container-type-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .container-type-select {
+            width: 200px;
+        }
+
+        .container-type-image {
+            margin-left: 20px;
+            max-width: 200px;
+            max-height: 200px;
+        }
+    </style>
 </head>
 <body>
-    
+    <div class="navbar">
+        <img src="{% static 'images/logo.png' %}" alt="User Image" class="user-image">
+        <a href="#"><img src="{% static 'images/path_outline.png' %}" class="cta"></a>
+        <a href="#"><img src="{% static 'images/home.png' %}" class="cta"></a>
+        <a href="#"><img src="{% static 'images/optimization.png' %}" class="cta"></a>
+        <a href="#"><img src="{% static 'images/setting.png' %}" class="cta"></a>
+        <a href="#"><img src="{% static 'images/support.png' %}" class="cta"></a>
+    </div>
+    <div class="container">
+        <header>
+            <div class="breadcrumb">
+                <a href="{% url 'home' %}">Home</a> &gt; <span>FreeTrial</span>
+            </div>
+            <div class="user-info">
+                <button type="button" id="reloadButton" class="reload-button">
+                    <img src="{% static 'images/reload.png' %}" alt="Reload" class="user-others">
+                </button>
+                <img src="{% static 'images/Notification.png' %}" alt="Notifications" style="height: 22px;width: 17px;padding: 0 20px;">
+                <img src="{% static 'images/author-photo.png' %}" alt="User Image" class="user-image">
+                <span class="user-name">{{ user.user_first_name }}</span>
+                <span class="company-email">{{ user.email }}</span>
+            </div>
+        </header>
+
+        <div class="container-form">
+            <h1>Container Builder (Trial Version) </h1>
+            <form action="{% url 'freeOutput' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label for="numTypes">Number of Types of Boxes:</label>
+                <input type="number" id="numTypes" name="numTypes" min="1" max="3" value="1" onchange="generateInputs()">
+                
+                <div id="productForm">
+                   
+                </div>
+                
+                <label for="totalContainers" class="total-container-label">Total Type of Container:</label>
+                <input type="number" id="totalContainers" name="totalContainers" min="0" max="1" value="1" onchange="generateTypeInputs()" class="total-container-input">
+                
+                
+                <label for="numContainers">Number of Containers:</label>
+                <input type="number" id="numContainers" name="numContainers" min="1" max="2" value="1" class="num-containers-input">
+                
+                <div id="typeInputs" class="container-types">
+                    
+                </div>
+                
+                <button type="submit" class="btn-apply" style="margin-left:50%; margin-top: 5%;">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            generateInputs();
+            generateTypeInputs();
+        });
+
+        function generateInputs() {
+            var numTypes = document.getElementById("numTypes").value;
+            var form = document.getElementById("productForm");
+
+            form.innerHTML = "";
+
+            for (var i = 0; i < numTypes; i++) {
+                var rowDiv = document.createElement("div");
+                rowDiv.classList.add("input-row");
+
+                if (i === 0) {
+                    var autofillButton = document.createElement("button");
+                    autofillButton.textContent = "Autofill";
+                    autofillButton.classList.add("autofill-button");
+                    autofillButton.type = "button";
+                    autofillButton.onclick = function() {
+                        autofillFirstBox();
+                    };
+                    form.appendChild(autofillButton);
+                }
+
+                rowDiv.appendChild(createInput("Gross Weight:", "text", "grossWeight" + i));
+                rowDiv.appendChild(createInput("Net Weight:", "text", "netWeight" + i));
+                rowDiv.appendChild(createInput("Volume:", "text", "volume" + i));
+                rowDiv.appendChild(createInput("Temperature:", "text", "temperature" + i));
+                rowDiv.appendChild(createInput("Length:", "text", "length" + i));
+                rowDiv.appendChild(createInput("Width:", "text", "width" + i));
+                rowDiv.appendChild(createInput("Height:", "text", "height" + i));
+                rowDiv.appendChild(createInput("Number of Cases:", "text", "numberOfCases" + i));
+
+                var rotationCell = createInput("Rotation Allowed:", "checkbox", "rotationAllowed" + i);
+                rotationCell.classList.add("checkbox-label");
+                rowDiv.appendChild(rotationCell);
+
+                form.appendChild(rowDiv);
+            }
+        }
+
+        function createInput(labelText, type = "text", name = "") {
+            var label = document.createElement("label");
+            label.textContent = labelText;
+            label.classList.add("input");
+
+            var input = document.createElement("input");
+            input.type = type;
+            input.name = name;
+            input.required = true;
+
+            label.appendChild(input);
+
+            return label;
+        }
+
+        var truck_specs = {
+            "General Purpose container 20'": {
+                "length_container": 5900,
+                "width_container": 2352,
+                "height_container": 2393,
+                "max_weight": 32500,
+                "image": "{% static 'images/container_20.png' %}"
+            },
+            "General Purpose container 40'": {
+                "length_container": 12032,
+                "width_container": 2352,
+                "height_container": 2395,
+                "max_weight": 32500,
+                "image": "{% static 'images/container_40.png' %}"
+            },
+            "High - Cube General Purpose container 40'": {
+                "length_container": 12032,
+                "width_container": 2432,
+                "height_container": 2700,
+                "max_weight": 32500,
+                "image": "{% static 'images/high_container_40.png' %}"
+            },
+            "Custom Container": {
+                "length_container": null,
+                "width_container": null,
+                "height_container": null,
+                "max_weight": null,
+                "image": null
+            }
+        };
+
+        var autoFillerBox = [
+            {
+                "Gross Weight": 0.78,
+                "Net Weight": 0.58,
+                "Volume": 0.023,
+                "Temperature": 1,
+                "Length": 396,
+                "Width": 199,
+                "Height": 287,
+                "Number of Cases": 600,
+                "Rotation Allowed": 1
+            },
+            {
+                "Gross Weight": 1.5,
+                "Net Weight": 1.2,
+                "Volume": 0.050,
+                "Temperature": 2,
+                "Length": 400,
+                "Width": 200,
+                "Height": 300,
+                "Number of Cases": 400,
+                "Rotation Allowed": 0
+            },
+            {
+                "Gross Weight": 2.0,
+                "Net Weight": 1.6,
+                "Volume": 0.075,
+                "Temperature": 3,
+                "Length": 450,
+                "Width": 250,
+                "Height": 350,
+                "Number of Cases": 500,
+                "Rotation Allowed": 1
+            }
+        ];
+
+        function generateTypeInputs() {
+            var totalContainers = document.getElementById("totalContainers").value;
+            var typeInputsDiv = document.getElementById("typeInputs");
+
+            typeInputsDiv.innerHTML = "";
+
+            for (var i = 0; i < totalContainers; i++) {
+                var containerDiv = document.createElement("div");
+                containerDiv.classList.add("input-row");
+                containerDiv.classList.add("container-type-container");
+
+                var typeLabel = document.createElement("label");
+                typeLabel.textContent = "Type of Container " + (i + 1) + ":";
+                typeLabel.classList.add("container-type-label");
+                containerDiv.appendChild(typeLabel);
+
+                var typeSelect = document.createElement("select");
+                typeSelect.name = "containerType" + (i + 1);
+                typeSelect.required = true;
+                typeSelect.classList.add("container-type-select");
+                typeSelect.onchange = updateTypeOptions;
+                containerDiv.appendChild(typeSelect);
+
+                for (var type in truck_specs) {
+                    var option = document.createElement("option");
+                    option.value = type;
+                    option.text = type;
+                    typeSelect.appendChild(option);
+                }
+
+                var dimensionsLabel = document.createElement("label");
+                dimensionsLabel.classList.add("container-dimensions-label");
+                containerDiv.appendChild(dimensionsLabel);
+
+                var imageLabel = document.createElement("label");
+                imageLabel.classList.add("container-type-image");
+                containerDiv.appendChild(imageLabel);
+
+                typeInputsDiv.appendChild(containerDiv);
+            }
+        }
+
+        function updateTypeOptions(event) {
+            var selectElement = event.target;
+            var selectedOption = selectElement.value;
+
+            var dimensionsLabel = selectElement.nextSibling;
+            var imageLabel = dimensionsLabel.nextSibling;
+
+            var customInputs = dimensionsLabel.parentElement.querySelectorAll('.custom-dimensions');
+            customInputs.forEach(input => input.remove());
+
+            var dimensions = getTruckDimensions(selectedOption);
+            if (dimensions) {
+                dimensionsLabel.textContent = dimensions;
+                var specs = truck_specs[selectedOption];
+                if (specs && specs.image) {
+                    var imageTag = '<img src="' + specs.image + '" alt="' + selectedOption + ' Image" class="container-type-image">';
+                    imageLabel.innerHTML = imageTag;
+                } else {
+                    imageLabel.innerHTML = "";
+                }
+            } else {
+                dimensionsLabel.textContent = "Custom Dimensions: Please provide your own dimensions.";
+                imageLabel.innerHTML = "";
+
+                var customDimensionsDiv = document.createElement("div");
+                customDimensionsDiv.classList.add("input-row");
+                customDimensionsDiv.classList.add("custom-dimensions");
+
+                customDimensionsDiv.appendChild(createInput("Length:", "text", "customLength"));
+                customDimensionsDiv.appendChild(createInput("Width:", "text", "customWidth"));
+                customDimensionsDiv.appendChild(createInput("Height:", "text", "customHeight"));
+                customDimensionsDiv.appendChild(createInput("Max Capacity:", "text", "customMaxCapacity"));
+
+                dimensionsLabel.parentElement.appendChild(customDimensionsDiv);
+            }
+        }
+
+        function getTruckDimensions(selectedOption) {
+            var specs = truck_specs[selectedOption];
+            if (specs && specs.length_container && specs.width_container && specs.height_container && specs.max_weight) {
+                var dimensions = "Length: " + specs.length_container + "mm, Width: " + specs.width_container + "mm, Height: " + specs.height_container + "mm, Max Weight: " + specs.max_weight + "kg";
+                return dimensions;
+            }
+            return null;
+        }
+
+        function autofillFirstBox() {
+            var numTypes = document.getElementById("numTypes").value;
+
+            for (var i = 0; i < numTypes; i++) {
+                var box = autoFillerBox[i % autoFillerBox.length];
+                document.querySelector(`[name="grossWeight${i}"]`).value = box["Gross Weight"];
+                document.querySelector(`[name="netWeight${i}"]`).value = box["Net Weight"];
+                document.querySelector(`[name="volume${i}"]`).value = box["Volume"];
+                document.querySelector(`[name="temperature${i}"]`).value = box["Temperature"];
+                document.querySelector(`[name="length${i}"]`).value = box["Length"];
+                document.querySelector(`[name="width${i}"]`).value = box["Width"];
+                document.querySelector(`[name="height${i}"]`).value = box["Height"];
+                document.querySelector(`[name="numberOfCases${i}"]`).value = box["Number of Cases"];
+                document.querySelector(`[name="rotationAllowed${i}"]`).checked = box["Rotation Allowed"];
+            }
+        }
+    </script>
+</body>
+</html> -->
+
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings Page</title>
+    <link rel="stylesheet" href="{% static 'css/freeTrial.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css" rel="stylesheet">
+    <style>
+        /* Your additional styles here */
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <img src="{% static 'images/logo.png' %}" alt="User Image" class="user-image">
+        <a href="#"><img src="{% static 'images/path_outline.png' %}" class="cta"></a>
+        <a href="#"><img src="{% static 'images/home.png' %}" class="cta"></a>
+        <a href="#"><img src="{% static 'images/optimization.png' %}" class="cta"></a>
+        <a href="#"><img src="{% static 'images/setting.png' %}" class="cta"></a>
+        <a href="#"><img src="{% static 'images/support.png' %}" class="cta"></a>
+    </div>
+    <div class="container">
+        <header>
+            <div class="breadcrumb">
+                <a href="{% url 'home' %}">Home</a> &gt; <span>FreeTrial</span>
+            </div>
+            <div class="user-info">
+                <button type="button" id="reloadButton" class="reload-button">
+                    <img src="{% static 'images/reload.png' %}" alt="Reload" class="user-others">
+                </button>
+                <img src="{% static 'images/Notification.png' %}" alt="Notifications" style="height: 22px;width: 17px;padding: 0 20px;">
+                <img src="{% static 'images/author-photo.png' %}" alt="User Image" class="user-image">
+                <span class="user-name">{{ user.user_first_name }}</span>
+                <span class="company-email">{{ user.email }}</span>
+            </div>
+        </header>
+
+        <div class="container-form">
+            <h1>Container Builder (Trial Version)</h1>
+            <form action="{% url 'freeOutput' %}" method="POST" enctype="multipart/form-data" id="combinedForm">
+                {% csrf_token %}
+
+                
+                <button type="button" class="collapsible">Add load details</button>
+                <div class="content">
+                    <label for="numTypes">Number of Types of Boxes:</label>
+                    <input type="number" id="numTypes" name="numTypes" min="1" max="3" value="1" onchange="generateInputs()">
+
+                    <div id="productForm">
+                        <!-- Prefilled SKUs will be generated here -->
+                    </div>
+                </div>
+
+                <button type="button" class="collapsible">Add Container details</button>
+                <div class="content">
+                    <div id="containerDetails">
+                        <label for="totalContainers" class="total-container-label">Total Type of Container:</label>
+                        <input type="number" id="totalContainers" name="totalContainers" min="0" max="1" value="1" onchange="generateTypeInputs()" class="total-container-input">
+                        
+                        <label for="numContainers">Number of Containers:</label>
+                        <input type="number" id="numContainers" name="numContainers" min="1" max="2" value="1" class="num-containers-input">
+                        
+                        <div id="typeInputs" class="container-types">
+                            <!-- Dynamic inputs for the container type will be generated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="collapsible" id="optimizeButton">Add Optimization constraints</button>
+                <div class="content">
+                    <!-- Add optimization constraints content here if needed -->
+                </div>
+
+                <div class="blurred-background" id="blurredBackground"></div>
+                <div id="popup" class="popup">
+                    <div class="popup-content">
+                        <p>Go pro to use this functionality</p>
+                        <a href="{% url 'additionalInformation' %}" class="btn-apply" style=" text-decoration: none;">Sign Up</a>
+                        <br><br>
+                        <button type="button" class="btn-cancel" onclick="closePopup()">Close</button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-apply" style="margin-left:50%; margin-top: 5%;font-size: 15px;">Optimize</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            generateInputs();
+            generateTypeInputs();
+
+            var coll = document.getElementsByClassName("collapsible");
+            for (var i = 0; i < coll.length; i++) {
+                coll[i].addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    var content = this.nextElementSibling;
+                    if (content.style.display === "block") {
+                        content.style.display = "none";
+                    } else {
+                        content.style.display = "block";
+                    }
+                });
+            }
+
+            document.getElementById("optimizeButton").addEventListener("click", function() {
+                var popup = document.getElementById("popup");
+                var blurredBackground = document.getElementById("blurredBackground");
+                popup.style.display = "block";
+                blurredBackground.style.display = "block";
+            });
+        });
+
+        function closePopup() {
+            var popup = document.getElementById("popup");
+            var blurredBackground = document.getElementById("blurredBackground");
+            popup.style.display = "none";
+            blurredBackground.style.display = "none";
+        }
+
+        function generateInputs() {
+            var form = document.getElementById("productForm");
+
+            form.innerHTML = "";
+
+            for (var i = 0; i < 3; i++) {
+                var rowDiv = document.createElement("div");
+                rowDiv.classList.add("input-row");
+
+                rowDiv.appendChild(createInput("Gross Weight:", "text", "grossWeight" + i, autoFillerBox[i]["Gross Weight"]));
+                rowDiv.appendChild(createInput("Net Weight:", "text", "netWeight" + i, autoFillerBox[i]["Net Weight"]));
+                rowDiv.appendChild(createInput("Volume:", "text", "volume" + i, autoFillerBox[i]["Volume"]));
+                rowDiv.appendChild(createInput("Temperature:", "text", "temperature" + i, autoFillerBox[i]["Temperature"]));
+                rowDiv.appendChild(createInput("Length:", "text", "length" + i, autoFillerBox[i]["Length"]));
+                rowDiv.appendChild(createInput("Width:", "text", "width" + i, autoFillerBox[i]["Width"]));
+                rowDiv.appendChild(createInput("Height:", "text", "height" + i, autoFillerBox[i]["Height"]));
+                rowDiv.appendChild(createInput("Number of Cases:", "text", "numberOfCases" + i, autoFillerBox[i]["Number of Cases"]));
+
+                var rotationCell = createInput("Rotation Allowed:", "checkbox", "rotationAllowed" + i);
+                rotationCell.classList.add("checkbox-label");
+                rotationCell.querySelector('input').checked = autoFillerBox[i]["Rotation Allowed"];
+                rowDiv.appendChild(rotationCell);
+
+                var deleteBtn = document.createElement("button");
+                deleteBtn.classList.add("btn-delete");
+                deleteBtn.textContent = "Delete";
+                deleteBtn.type = "button";
+                deleteBtn.addEventListener("click", function() {
+                    deleteInputRow(rowDiv);
+                });
+                rowDiv.appendChild(deleteBtn);
+
+                form.appendChild(rowDiv);
+            }
+        }
+
+        function deleteInputRow(rowDiv) {
+            var form = document.getElementById("productForm");
+            rowDiv.parentElement.removeChild(rowDiv); // Remove the parent of the button clicked
+
+            var rows = form.getElementsByClassName("input-row");
+            if (rows.length === 0) {
+                alert("At least one SKU must be present.");
+            }
+        }
+
+        function createInput(labelText, type = "text", name = "", value = "") {
+            var label = document.createElement("label");
+            label.textContent = labelText;
+            label.classList.add("input");
+
+            var input = document.createElement("input");
+            input.type = type;
+            input.name = name;
+            input.required = true;
+            if (type !== "checkbox") {
+                input.value = value;
+            }
+
+            label.appendChild(input);
+
+            return label;
+        }
+
+        var truck_specs = {
+            "General Purpose container 20'": {
+                "length_container": 5900,
+                "width_container": 2352,
+                "height_container": 2393,
+                "max_weight": 32500,
+                "image": "{% static 'images/container_20.png' %}"
+            },
+            "General Purpose container 40'": {
+                "length_container": 12032,
+                "width_container": 2352,
+                "height_container": 2393,
+                "max_weight": 26500,
+                "image": "{% static 'images/container_40.png' %}"
+            },
+            "High - Cube General Purpose container 40'": {
+                "length_container": 12032,
+                "width_container": 2352,
+                "height_container": 2698,
+                "max_weight": 26500,
+                "image": "{% static 'images/high_container_40.png' %}"
+            },
+            "Custom Container": {
+                "length_container": null,
+                "width_container": null,
+                "height_container": null,
+                "max_weight": null,
+                "image": null
+            }
+        };
+
+        var autoFillerBox = [
+            {
+                "Gross Weight": 0.78,
+                "Net Weight": 0.58,
+                "Volume": 0.023,
+                "Temperature": 1,
+                "Length": 396,
+                "Width": 199,
+                "Height": 287,
+                "Number of Cases": 600,
+                "Rotation Allowed": 1
+            },
+            {
+                "Gross Weight": 1.5,
+                "Net Weight": 1.2,
+                "Volume": 0.050,
+                "Temperature": 2,
+                "Length": 400,
+                "Width": 200,
+                "Height": 300,
+                "Number of Cases": 400,
+                "Rotation Allowed": 1
+            },
+            {
+                "Gross Weight": 2.0,
+                "Net Weight": 1.6,
+                "Volume": 0.075,
+                "Temperature": 3,
+                "Length": 450,
+                "Width": 250,
+                "Height": 350,
+                "Number of Cases": 500,
+                "Rotation Allowed": 1
+            }
+        ];
+
+        function generateTypeInputs() {
+            var totalContainers = document.getElementById("totalContainers").value;
+            var typeInputsDiv = document.getElementById("typeInputs");
+
+            typeInputsDiv.innerHTML = "";
+
+            for (var i = 0; i < totalContainers; i++) {
+                var containerDiv = document.createElement("div");
+                containerDiv.classList.add("input-row");
+                containerDiv.classList.add("container-type-container");
+
+                var typeLabel = document.createElement("label");
+                typeLabel.textContent = "Type of Container " + (i + 1) + ":";
+                typeLabel.classList.add("container-type-label");
+                containerDiv.appendChild(typeLabel);
+
+                var typeSelect = document.createElement("select");
+                typeSelect.name = "containerType" + (i + 1);
+                typeSelect.required = true;
+                typeSelect.classList.add("container-type-select");
+                typeSelect.onchange = updateTypeOptions;
+                containerDiv.appendChild(typeSelect);
+
+                for (var type in truck_specs) {
+                    var option = document.createElement("option");
+                    option.value = type;
+                    option.text = type;
+                    typeSelect.appendChild(option);
+                }
+
+                var dimensionsLabel = document.createElement("label");
+                dimensionsLabel.classList.add("container-dimensions-label");
+                containerDiv.appendChild(dimensionsLabel);
+
+                var imageLabel = document.createElement("label");
+                imageLabel.classList.add("container-type-image");
+                containerDiv.appendChild(imageLabel);
+
+                typeInputsDiv.appendChild(containerDiv);
+            }
+        }
+
+        function updateTypeOptions(event) {
+            var selectElement = event.target;
+            var selectedOption = selectElement.value;
+
+            var dimensionsLabel = selectElement.nextSibling;
+            var imageLabel = dimensionsLabel.nextSibling;
+
+            var customInputs = dimensionsLabel.parentElement.querySelectorAll('.custom-dimensions');
+            customInputs.forEach(input => input.remove());
+
+            var dimensions = getTruckDimensions(selectedOption);
+            if (dimensions) {
+                dimensionsLabel.textContent = dimensions;
+                var specs = truck_specs[selectedOption];
+                if (specs && specs.image) {
+                    var imageTag = '<img src="' + specs.image + '" alt="' + selectedOption + ' Image" class="container-type-image">';
+                    imageLabel.innerHTML = imageTag;
+                } else {
+                    imageLabel.innerHTML = "";
+                }
+            } else {
+                dimensionsLabel.textContent = "Custom Dimensions: Please provide your own dimensions.";
+                imageLabel.innerHTML = "";
+
+                var customDimensionsDiv = document.createElement("div");
+                customDimensionsDiv.classList.add("input-row");
+                customDimensionsDiv.classList.add("custom-dimensions");
+
+                customDimensionsDiv.appendChild(createInput("Length:", "text", "customLength"));
+                customDimensionsDiv.appendChild(createInput("Width:", "text", "customWidth"));
+                customDimensionsDiv.appendChild(createInput("Height:", "text", "customHeight"));
+                customDimensionsDiv.appendChild(createInput("Max Capacity:", "text", "customMaxCapacity"));
+
+                dimensionsLabel.parentElement.appendChild(customDimensionsDiv);
+            }
+        }
+
+        function getTruckDimensions(selectedOption) {
+            var specs = truck_specs[selectedOption];
+            if (specs && specs.length_container && specs.width_container && specs.height_container && specs.max_weight) {
+                var dimensions = "Length: " + specs.length_container + "mm, Width: " + specs.width_container + "mm, Height: " + specs.height_container + "mm, Max Weight: " + specs.max_weight + "kg";
+                return dimensions;
+            }
+            return null;
+        }
+    </script>
 </body>
 </html>
