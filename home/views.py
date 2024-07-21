@@ -16,6 +16,7 @@ from home.utils import save_data_to_files,DataProcess,perform_computation
 from copy import deepcopy
 import pandas as pd
 import math
+import re
 
 truck_specs = {
     "General Purpose container 20'": {
@@ -81,7 +82,7 @@ def additionalInformation(request):
         user_exists = Users.objects.filter(email_id=email).exists()
         if user_exists:
             messages.error(request, "An account with this email already exists.")
-            return render(request, 'additionalInformation.html')
+            return render(request, 'login.html')
 
         # Create a new user
         user = Users(
@@ -100,6 +101,7 @@ def additionalInformation(request):
 
         # Authenticate and log the user in
         user = authenticate(request, username=email, password=password)
+        print(user)
         if user is not None:
             login(request, user)
             # Redirect to the dashboard after successful login
@@ -158,6 +160,8 @@ def logout_view(request):
         logout(request)  # This will clear the session and log the user out
     return redirect(home)
 
+def enquire(request):
+    return render(request, 'enquiry.html')
 @csrf_exempt
 def add_container(request):
     if request.method == 'POST':
@@ -180,6 +184,7 @@ def freeOutput(request):
         num_types = request.POST.get('numTypes')
         total_containers = request.POST.get('totalContainers')
         num_containers = int(request.POST.get('numContainers'))
+        # print(num_types)
 
         # print("num_c",num_containers)
 
@@ -195,13 +200,44 @@ def freeOutput(request):
                 'Width (in mm)': request.POST.get(f'width{i}'),
                 'Height (in mm)': request.POST.get(f'height{i}'),
                 'Number of Cases': request.POST.get(f'numberOfCases{i}'),
-                'Rotation Allowed (1 - YES, 0 - NO)': 1 if request.POST.get(f'rotationAllowed{i}') == 'on' else 0
+                'Rotation Allowed (1 - YES, 0 - NO)': 1 if request.POST.get(f'rotationAllowed{i}') == 'on' else 0,
+                'color': request.POST.get(f'color{i}')
             }
             box_details.append(box)
 
         # Create DataFrame
+
+        def rgba_string_to_hex(rgba_string):
+            # Use regex to extract RGBA values from the string
+            match = re.match(r'rgba\((\d+(\.\d+)?),\s*(\d+(\.\d+)?),\s*(\d+(\.\d+)?),\s*([0-1](\.\d+)?)\)', rgba_string)
+            
+            if not match:
+                raise ValueError("Invalid RGBA string format")
+            
+            # Extracting the values and converting them to float
+            r, g, b, a = map(float, [match.group(1), match.group(3), match.group(5), match.group(7)])
+            
+            # Ensure that RGB values are within the valid range [0, 255]
+            r = int(max(0, min(255, r)))
+            g = int(max(0, min(255, g)))
+            b = int(max(0, min(255, b)))
+            
+            # Convert RGB to hex
+            hex_color = f'#{r:02X}{g:02X}{b:02X}'
+            
+            # If alpha is not 1, include it in the hex code
+            if a < 1.0:
+                a = int(a * 255)
+                hex_color += f'{a:02X}'
+            
+            return hex_color
+
         df = pd.DataFrame(box_details)
+        for i in range(len(df['color'])):
+            df.loc[i,'color']= rgba_string_to_hex(df['color'][i])
+
         # Collect container details
+        # print(df)
         container_data = {}
         for i in range(int(total_containers)):
             container_type = request.POST.get(f'containerType{i+1}')
@@ -231,7 +267,7 @@ def freeOutput(request):
             container_data[container_type] = num_containers
 
         # print(truck_specs)
-        print(container_data)
+        # print(container_data)
         # container_data = {}
 
         # for i in range(1, total_containers + 1):
@@ -267,6 +303,7 @@ def freeOutput(request):
         box_info =  []
         rem_Strip_calc = []
         rem_boxes= []
+        # df.index += 1
         
         
 
@@ -307,6 +344,7 @@ def freeOutput(request):
                     #     curr.append((rem_Strip_calc[i] - df['Rem_Strips'][i])*df['NumOfBoxesPerStrip'][i])
                     if df['Rem_Boxes'][i] != rem_boxes[i]:
                         curr.append((rem_Strip_calc[i] - df['Rem_Strips'][i])*df['NumOfBoxesPerStrip'][i] + rem_boxes[i])
+                        rem_boxes[i] = 0
                     else:
                         curr.append((rem_Strip_calc[i] - df['Rem_Strips'][i])*df['NumOfBoxesPerStrip'][i])
 
@@ -337,7 +375,8 @@ def freeOutput(request):
         # print(img_paths)
         
         # container_count = len(total_containers)  # Number of containers
-        distinct_colors = ['red', 'blue', 'yellow', 'orange', 'green', 'violet', 'white', 'indigo', 'cyan', 'magenta', 'lime', 'pink', 'teal', 'lavender', 'brown', 'gray', 'black']
+        # print(df)
+        distinct_colors = df['Color'].tolist()
         for i in range(len(df)):
             sku_info.append([
                 df['BoxNumber'][i]+1,
@@ -347,6 +386,11 @@ def freeOutput(request):
                 df['NumOfBoxesPerStrip'][i]
             ])
         # print(box_info)
+
+        df_ht= df.drop(['BoxNumber','TotalNumStrips','Rem_Boxes','Rem_Strips','Alpha(rotation about Z-axis)','GrossWeight','Marked','Color'],axis=1)
+        df_ht.index+=1
+        # print(df_ht)
+        df_ht = df_ht.to_html(classes='data')
         container_indices = range(1,num_containers+1)
         context = {
             'packaging_density': packd_list,
@@ -359,7 +403,8 @@ def freeOutput(request):
             'num_skus': range(1,len(df)+1),
             'colors' : distinct_colors,
             'sku_info':sku_info,
-            'box_info':box_info
+            'box_info':box_info,
+            'df':df_ht
             
         }
         # print(num_placed)

@@ -167,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
             "purple": 0x800080,
             "orange": 0xFFA500,
             "black": 0x000000,
+            
         };
 
         let textMesh; // Declare textMesh globally
@@ -184,6 +185,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const endZ = containerDepth - box.end.y;
                 const colorName = box.color;
 
+                // colorName = hexTo0x(colorName)
+                // console.log(startX)
+
                 const smallBoxWidth = box.dimensions.width;
                 const smallBoxHeight = box.dimensions.height;
                 const smallBoxDepth = box.dimensions.length;
@@ -194,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const smallBoxGeometry = new THREE.BoxGeometry(smallBoxWidth, smallBoxHeight, smallBoxDepth);
                 const smallBoxMaterial = new THREE.MeshStandardMaterial({
-                    color: colorMap[colorName] || 0xFFFFFF,
+                    color: parseInt(colorName, 16)|| 0xFFFFFF,
                     transparent: true,
                     opacity: 0.9,
                     side: THREE.DoubleSide
@@ -338,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             bevelEnabled: false
                         });
 
-                        const countMaterial = new THREE.MeshBasicMaterial({ color: colorMap[color] || 0xFFFFFF });
+                        const countMaterial = new THREE.MeshBasicMaterial({ color: parseInt(color, 16) || 0xFFFFFF });
 
                         // Create the text mesh for the count
                         const countMesh = new THREE.Mesh(countGeometry, countMaterial);
@@ -437,9 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Function to reset the view
         const resetView = () => {
             camera.position.set(
-                3.5 * containerWidth * aspectWidth,
-                3 * containerHeight * aspectHeight,
-                1.4* containerDepth * aspectDepth
+                4.9 * containerWidth*aspectWidth, 4.9 * containerHeight*aspectHeight, 1.2* containerDepth*aspectDepth
             );
             orbit.target.set(
                 containerWidth / 2 * aspectWidth,

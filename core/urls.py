@@ -32,7 +32,9 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('manageUsers/', manageUsers, name='manageUsers'),
     path('additionalInformation/', additionalInformation, name='additionalInformation'),
-    path('freeOutput/', freeOutput, name='freeOutput')
+    path('freeOutput/', freeOutput, name='freeOutput'),
+    path('enquire/', enquire, name='enquire')
+
 ]
 
 #for aws enable 

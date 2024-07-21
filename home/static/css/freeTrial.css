@@ -1,6 +1,6 @@
 
 html, body {
-    height: 100%;
+    height: 40%;
     margin: 0;
     padding: 0;
     font-family: 'Manrope', sans-serif;
@@ -11,17 +11,22 @@ html, body {
 .input-row {
     display: flex;
     flex-wrap: wrap;
-    margin-bottom: 10px;
+    margin-right: 10px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+
 }
 
 .input-row label {
-    flex: 1 0 20%;
-    min-width: 150px;
-    margin-right: 10px;
+    /* font-weight: bold; */
+    flex: 1 0 1%;
+    min-width: 90px;
+    margin-top: 35px;
+    margin-left: 40px;
 }
 
 .input-row input, .input-row select {
-    flex: 1 0 30%;
+    flex: 1 0 1%;
     padding: 5px;
     margin-right: 10px;
 }
@@ -77,14 +82,9 @@ html, body {
     width: 200px;
 }
 
-.container-type-image {
-    margin-left: 20px;
-    max-width: 200px;
-    max-height: 200px;
-}
 
 .collapsible {
-    background-color: #DDE2E7;
+    background-color: #dde0e7;
     color: #000000;
     cursor: pointer;
     padding: 18px;
@@ -115,6 +115,7 @@ html, body {
 .popup {
     display: none;
     position: fixed;
+    border-radius: 10px;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
@@ -194,7 +195,7 @@ body {
     flex-direction: column;
     align-items: center;
     border: 2px solid #e3e7f0;
-    height: 140%; /* Ensure the navbar takes the full height */
+    height: 270%; /* Ensure the navbar takes the full height */
     box-shadow: 0 4px 8px 0 rgba(227, 231, 240, 0.8); /* Add drop shadow */
 }
 
@@ -431,7 +432,9 @@ main {
 
 
 .btn-delete {
-    padding: 10px 20px;
+    padding: 0px 20px;
+    height: 40px;
+    transform: translateY(26px);
     border-radius: 5px;
     margin-right: 10px;
     border: none;
@@ -476,6 +479,176 @@ main {
     position: relative;
 }
 
+.container-row{
+    /* padding: 0; */
+    display: flex;
+    flex-direction: column;
+    /* gap:4px; */
+}
+
+.delete-btn:hover {
+    background-color: #d32f2f;
+}
+.SKU-cta{
+    width: 100%;
+    margin-bottom:20px;
+    padding:0 40%;
+}
+.input-row{
+    padding: 0;
+}
+
+.container-type-select {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transform: translate(200px,-35px);
+}
+
+.container-type-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.container-type-label,
+.container-dimensions-label,
+.container-type-image {
+    margin-bottom:6px;
+    /* margin-top: -2px; */
+    padding: 0;
+}
+.container-type-image{
+    height: 150px;
+    width: 300px;
+    margin-left: -70px;
+    /* transform: translateX(-200px); */
+}
+
+.container-dimensions-label{
+    transform: translateX(-200px);
+}
+.container-details-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 100px;
+}
+
+.container-details-container label {
+    display: block;
+}
+#numContainers{
+    width: 10%;
+}
+.checkbox-label{
+    transform: translateY(27px);
+    padding: 0;
+}
+.warning-message {
+    display: none;
+    background-color: #ffcccc;
+    color: #cc0000;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    border-radius: 5px;
+    transition: opacity 0.3s ease-in-out; /* Transition effect */
+}
+
+.warning-message.show {
+    display: block;
+    opacity: 1;
+}
+
+.popup-content {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+}
+
+.popup-text {
+    flex: 1;
+    margin-right: 40px;
+    width: 500px;
+    text-align: left;
+}
+
+.popup-text h1 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.popup-text p {
+    margin-bottom: 20px;
+}
+
+.popup-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.popup-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-image img {
+    /* max-width: 100%;
+    height: auto; */
+    width: 600px;
+    height: 400px;
+    border:1px solid black;
+    border-radius: 5px;
+}
+
+.close-icon {
+    position: absolute;
+    top: 1px;
+    right: 5px;
+    cursor: pointer;
+    height: 20px;
+    width: 20px;
+}
+
+.delete-img{
+    height:20px;
+    width: 20px;
+    margin-top:2.9%;
+    cursor: pointer;
+}
+#containerDetils{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 200px;
+    padding: 0;
+}
+#addLoadDetailsButton{
+    font-size: 20px;
+}
+#addContainerDetails{
+    font-size: 20px;
+}
+#optimizeButton{
+    font-size: 20px;
+}
+.custom-dimensions{
+    display: flex;
+    flex: 1 0 30%;
+    flex-direction: row-reverse;
+}
+.custom-dimensions.input-row{
+    margin-top:-150px;
+}
+
 /* Close button */
 .close {
     position: absolute;
@@ -501,7 +674,8 @@ main {
 /* Label */
 label {
     display: block;
-    margin-bottom: 8px;
+    margin:0;
+    padding: 0;
     color: #555;
     font-size: 14px;
 }

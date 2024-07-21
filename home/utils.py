@@ -22,7 +22,11 @@ max_memory_usage = 0  # Initialize max memory usage
 # def data_process():
 #     return render_template('dataProcess.html')
 
-
+def hex_to_0x(hex_code):
+    if hex_code.startswith('#'):
+        hex_code = hex_code[1:]
+    int_value = int(hex_code, 16)
+    return f"0x{int_value:06X}"
 
 # @app.route('/upload_excel', methods=['POST'])
 # def upload_file():
@@ -101,7 +105,8 @@ def DataProcess(df, truck_spec, perc, dataP, data):
     width_container = truck_spec['width_container']
     height_container = perc * truck_spec['height_container']
     max_weight = truck_spec['max_weight']
-    
+    # print(data)
+    # print(df)
     # List of columns in the input data
     col_list = data.columns.tolist()
 
@@ -117,6 +122,8 @@ def DataProcess(df, truck_spec, perc, dataP, data):
         net_weight = data[col_list[1]].tolist()
         temperature = data[col_list[3]].tolist()
         vol = data[col_list[2]].tolist()
+        colors = data[col_list[len(col_list)-1]].tolist()
+
     else:
         # Extracting data when dataP is not equal to 2
         gross_weight = data[col_list[0]].tolist()
@@ -128,6 +135,7 @@ def DataProcess(df, truck_spec, perc, dataP, data):
         temperature = data[col_list[3]].tolist()
         length = data[col_list[4]].tolist()
         width = data[col_list[5]].tolist()
+        colors = data[col_list[len(col_list)-1]].tolist()
 
     # Define the Product class to represent individual products
     class Product:
@@ -234,8 +242,7 @@ def DataProcess(df, truck_spec, perc, dataP, data):
         df_new['BoxNumber'] = df_new.index
 
         # Define color dictionary
-        colors = {0: 'red', 1: 'blue', 2: 'yellow', 3: 'orange', 4: 'green', 5: 'violet', 6: 'white', 7: 'indigo', 8: 'cyan',
-                  9: 'magenta', 10: 'lime', 11: 'pink', 12: 'teal', 13: 'lavender', 14: 'brown', 15: 'gray', 16: 'black'}
+        colors = {i: color for i, color in enumerate(colors)}
 
         # Add 'Color' column
         df_new['Color'] = df_new['BoxNumber'].map(colors)
@@ -254,8 +261,7 @@ def DataProcess(df, truck_spec, perc, dataP, data):
         df['BoxNumber'] = df.index
 
         # Define color dictionary
-        colors = {0: 'red', 1: 'blue', 2: 'yellow', 3: 'orange', 4: 'green', 5: 'violet', 6: 'white', 7: 'indigo', 8: 'cyan',
-                  9: 'magenta', 10: 'lime', 11: 'pink', 12: 'teal', 13: 'lavender', 14: 'brown', 15: 'gray', 16: 'black'}
+        colors = {i: color for i, color in enumerate(colors)}
         
         # Add 'Color' column
         df['Color'] = df['BoxNumber'].map(colors)
@@ -282,7 +288,7 @@ def placeStrips(box_num,storage_strip,strip_list,ax,z,box_height,curr_weight,vol
     storage_strip.append([y,strip_list[box_num][3] * strip_list[box_num][9]])
     while num_boxes_in_a_strip > 0 and curr_weight+box_weight < max_weight:
         ax.bar3d(x, y, z, box_width, box_length, box_height, color=color, edgecolor='black')
-        box_storer.append({"start": {"x": x, "y": y, "z": z}, "end": {"x": x, "y": y, "z": z+box_height}, "color":color,
+        box_storer.append({"start": {"x": x, "y": y, "z": z}, "end": {"x": x, "y": y, "z": z+box_height}, "color":hex_to_0x(color),
                             "dimensions":{"length":box_length,"width":box_width,"height":box_height},"row":row})
         z += box_height
         num_boxes_in_a_strip -= 1
@@ -622,13 +628,14 @@ def place_nonH(x,y,z,colors,nH_list,container,ax,curr_weight,stored_plac,vol_occ
             box_width = nH_list[index][1]
             box_height = nH_list[index][2]
             box_weight = nH_list[index][5]
+            
 
             temp = rem_boxes
             dw = False
             while temp>0 and z<height_container:
                 if(x+box_width < width_container and curr_weight+box_weight < max_weight and z+box_height < height_container):
                     ax.bar3d(x, y, z, box_width, box_length, box_height, color=colors[box_num], edgecolor='black')
-                    box_storer.append({"start": {"x": x, "y": y, "z": z}, "end": {"x": x, "y": y, "z": z+box_height}, "color":colors[box_num],
+                    box_storer.append({"start": {"x": x, "y": y, "z": z}, "end": {"x": x, "y": y, "z": z+box_height}, "color":hex_to_0x(colors[box_num]),
                             "dimensions":{"length":box_length,"width":box_width,"height":box_height},"row":row})
                     z += box_height
                     temp -= 1
@@ -814,7 +821,12 @@ def perform_computation(df,container_toFit,strip_list,key,roll):
 
     #finding number of different SKUs
     n = len(strip_list)
-    colors = generate_colors(n)
+   
+
+    colors = df['Color'].tolist()
+    # converted_colors = [hex_to_0x(color) for color in colors]
+
+    # print(df)
 
 
     #Creating the required lists and variables for data handling 

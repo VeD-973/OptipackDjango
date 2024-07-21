@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+
     <title>Settings Page</title>
     <link rel="stylesheet" href="{% static 'css/freeOutput.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
@@ -153,6 +155,190 @@
         .sku-label {
             cursor: pointer; /* Change cursor to pointer */
         }
+        
+        .popup-content {
+            display: flex;
+            align-items: center;
+            padding: 30px;
+            position: relative;
+            width: 90%;
+        }
+
+        .popup-text {
+            flex: 1;
+            margin-right: 40px;
+            width: 500px;
+            text-align: left;
+        }
+
+        .popup-text h1 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .popup-text p {
+            margin-bottom: 20px;
+        }
+
+        .popup-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .popup-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-image img {
+            /* max-width: 100%;
+            height: auto; */
+            width: 600px;
+            height: 400px;
+            border:1px solid black;
+            border-radius: 5px;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            border-radius: 10px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid #888;
+            background-color: white;
+            z-index: 9;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .close-icon {
+            position: absolute;
+            top: 1px;
+            right: 0px;
+            cursor: pointer;
+            height: 20px;
+            width: 20px;
+        }
+        .blurred-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 8;
+            display: none;
+        }
+
+        .table-info {
+            margin: 20px 0;
+            /* border-radius: 5px; */
+            border-collapse: collapse;
+            width: 80%;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .table-info table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-info th, .table-info td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .table-info th {
+            background-color: #f2f2f2;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .table-info tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .table-info tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .table-info caption {
+            margin: 10px 0;
+            font-size: 1.5em;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .table-info td a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .table-info td a:hover {
+            text-decoration: underline;
+        }
+
+        .info-icon {
+            position: relative;
+            display: inline-block;
+        }
+
+        .info-icon img {
+            width: 20px;
+            height: 20px;
+            margin-top: 35px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        .tooltip {
+            visibility: hidden;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            left: 125%; /* Position to the right of the icon */
+            top: 50%;
+            transform: translateY(-50%);
+            width: 600px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -5px; /* Position arrow on the left side of the tooltip */
+            transform: translateY(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent transparent #555;
+        }
+        .info-icon:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .head{
+            display: flex;
+            flex-direction: row;
+            gap: 5px;
+        }
+        .premium-icon{
+            height: 20px;
+            width:20px;
+            margin-left:7px;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -178,19 +364,29 @@
         </header>
         <main>
             <div class="order-details">
-                <h1>Order ID #1234</h1>
-                <p>Created: 07/06/24 | Last updated: 10/06/24</p>
+                <div class="head">
+                    <h1>Loading Pattern</h1>
+                    <span class="info-icon">
+                        <img src="{% static 'images/info-icon.png' %}" alt="Info Icon">
+                        <span class="tooltip">Our algorithm elegantly mirrors real-world constraints by prioritizing the loading of homogeneous strips first, seamlessly followed by the non-homogeneous strips, ensuring an efficient and harmonious process.</span>
+                    </span>
+                </div>
+                
+                <div class="table-info">
+                    {{df | safe}}
+                </div>
+                <!-- <p>Created: 07/06/24 | Last updated: 10/06/24</p> -->
                 <div class="container-tabs">
                     {% for index in container_indices %}
-                        <button class="tab-button{% if forloop.first %} active{% endif %}" data-index="{{ forloop.counter0 }}">Container {{ index }}</button>
+                        <button style="margin-top:20px;width: 16%;" class="tab-button{% if forloop.first %} active{% endif %}" data-index="{{ forloop.counter0 }}">Container {{ index }}</button>
                     {% endfor %}
                 </div>
                 <div class="container-info">
                     <p>Container type: <span id="container-type">{{container_type}}</span></p>
                     <p>Container fill rate: <span id="vol-occ-curr">{{vol_occ_curr.0}}%</span></p>
-                    <p>Total volume: <span id="vol-container">{{vol_container.0}} cub.m</span></p>
+                    <!-- <p>Total volume: <span id="vol-container">{{vol_container.0}} cub.m</span></p> -->
                     <p>Packaging Density: <span id="packaging-density">{{packaging_density.0}}%</span></p>
-                    <p>Total Cases: <span id="total-cases">0</span></p>
+                    <!-- <p>Total Cases: <span id="total-cases">0</span></p> -->
 
                 </div>
                 <div class="content-wrapper">
@@ -203,19 +399,24 @@
                             <div class="sku-heading"></div>
                             <div class="sku-details"></div>
                             <div class="features">
-                                <h3>Edit Loading Pattern</h3>
+                                <h3>Edit Loading Pattern<img class="premium-icon" src="{% static 'images/premium.png' %}"></h3>
                                 <button class="btn-apply" id="edit-pattern">Edit Pattern</button>
                             </div>
                             <div>
-                                <h3>Share/Export Loading</h3>
+                                <h3>Share/Export Loading<img class="premium-icon" src="{% static 'images/premium.png' %}"></h3>
                                 <input type="email" class="features-input" placeholder="Enter your email">
                                 <br>
                                 <button class="btn-apply" id="share-loading">Share</button>
+                            </div>
+                            <div class="features">
+                                <h3>3d Loading Animation<img class="premium-icon" src="{% static 'images/premium.png' %}"></h3>
+                                <button class="btn-apply" id="Loading-Animation">See Loading Animation</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+          
         </main>
     </div>
     
@@ -226,11 +427,22 @@
         </div>
     </div>
 
-    <div id="pro-popup" class="pro-popup hidden">
-        <div class="pro-popup-content">
-            <button id="close-pro-popup">Close</button>
-            <p>Go Pro to use this functionality!</p>
-            <a href="{% url 'additionalInformation' %}" class="signup-button">Sign Up</a>
+    
+    <div class="blurred-background" id="blurredBackground"></div>
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <div class="popup-text">
+                <h1 style="font-size: 40px;">Upgrade to the Premium Version</h2>
+                <p style="font-size: 20px;">Explore the premium features that can transform your workflow and productivity.</p>
+                <div class="popup-buttons">
+                    <a href="{% url 'additionalInformation' %}" class="btn-apply" style=" text-decoration: none;">Upgrade Now</a>
+                    <a href="{% url 'enquire' %}" class="btn-cancel" style=" text-decoration: none;">Learn More</a>
+                </div>
+            </div>
+            <div class="popup-image">
+                <img src="{% static 'images/proVersion.png'%}" alt="Pro Version">
+            </div>
+            <img src="{% static 'images/cross.png' %}" alt="Close" class="close-icon" onclick="closePopup()">
         </div>
     </div>
 
@@ -241,6 +453,8 @@
             <div id="sku-info-content"></div>
         </div>
     </div>
+
+    
 
 
     <script>
@@ -289,11 +503,11 @@
                     tab.classList.add('active');
                     iframe.src = `{% static 'three_render.html' %}?threed_paths=${threedPaths[index]}&container_inf=${containerInf[index]}`;
                     document.getElementById('vol-occ-curr').textContent = volOccCurr[index] + '%';
-                    document.getElementById('vol-container').textContent = volContainer[index] + ' cub.m';
+                    // document.getElementById('vol-container').textContent = volContainer[index] + ' cub.m';
                     document.getElementById('packaging-density').textContent = packagingDensity[index] + '%';
 
-                    const totalCases = boxInfo[index].reduce((sum, num) => sum + num, 0);
-                    document.getElementById('total-cases').textContent = totalCases;
+                    // const totalCases = boxInfo[index].reduce((sum, num) => sum + num, 0);
+                    // document.getElementById('total-cases').textContent = totalCases;
 
                     // Load SKU data for the selected container
                     const skus = boxInfo[index];  // Access the SKU data for the selected container
@@ -351,20 +565,52 @@
             closeSkuPopupButton.addEventListener('click', () => {
                 skuPopup.classList.add('hidden');
             });
+            
 
             // Show popup for Edit Pattern and Share buttons
-            document.getElementById('edit-pattern').addEventListener('click', () => {
-                proPopup.classList.remove('hidden');
-            });
+            // document.getElementById('edit-pattern').addEventListener('click', () => {
+            //     proPopup.classList.remove('hidden');
+            // });
 
-            document.getElementById('share-loading').addEventListener('click', () => {
-                proPopup.classList.remove('hidden');
-            });
+            // document.getElementById('share-loading').addEventListener('click', () => {
+            //     proPopup.classList.remove('hidden');
+            // });
 
-            closeProPopupButton.addEventListener('click', () => {
-                proPopup.classList.add('hidden');
-            });
+            // closeProPopupButton.addEventListener('click', () => {
+            //     proPopup.classList.add('hidden');
+            // });
         });
+        document.querySelectorAll(".cta").forEach(function(element) {
+                element.addEventListener("click", function() {
+                    var popup = document.getElementById("popup");
+                    var blurredBackground = document.getElementById("blurredBackground");
+                    popup.style.display = "block";
+                    blurredBackground.style.display = "block";
+                });
+            });
+            function closePopup() {
+                var popup = document.getElementById("popup");
+                var blurredBackground = document.getElementById("blurredBackground");
+                popup.style.display = "none";
+                blurredBackground.style.display = "none";
+            }
+            document.getElementById("edit-pattern").addEventListener("click", function() {
+                var popup = document.getElementById("popup");
+                var blurredBackground = document.getElementById("blurredBackground");
+                popup.style.display = "block";
+                blurredBackground.style.display = "block";
+            });
+            document.getElementById("share-loading").addEventListener("click", function() {
+                var popup = document.getElementById("popup");
+                var blurredBackground = document.getElementById("blurredBackground");
+                popup.style.display = "block";
+                blurredBackground.style.display = "block";
+            });document.getElementById("Loading-Animation").addEventListener("click", function() {
+                var popup = document.getElementById("popup");
+                var blurredBackground = document.getElementById("blurredBackground");
+                popup.style.display = "block";
+                blurredBackground.style.display = "block";
+            });
     </script>
 </body>
 </html>
