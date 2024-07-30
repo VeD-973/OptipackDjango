@@ -129,15 +129,22 @@
             margin-top: 20px;
         }
         .small-button {
-            padding: 10px 20px; /* Smaller padding for smaller button size */
-            font-size: 16px; /* Smaller font size */
-            width: 140px; /* Adjust width as needed */
+            padding: 10px 2px; /* Smaller padding for smaller button size */
+            font-size: 15px; /* Smaller font size */
+            width: 100px; /* Adjust width as needed */
         }
         label.num{
             margin-top:15px;
         }
         body{
             overflow: hidden;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap:  10px; /* Space between the buttons */
+            margin-top: 20px;
+            margin-right: 5px;
         }
 
       
@@ -203,7 +210,10 @@
                             <!-- Dynamic inputs for the container type will be generated here -->
                         </div>
                     </div>
-                    <button type="button" class="btn-apply small-button center-button" onclick="finishLoadingContainer()">Submit</button>
+                    <div class="button-container">
+                        <button type="button" class="btn-apply" id="AddContainer">Add Container</button>
+                        <button type="button" class="btn-apply" onclick="finishLoadingContainer()">Submit</button>
+                    </div>
                 </div>
 
                 <button type="button" class="collapsible" id="optimizeButton">
@@ -267,6 +277,13 @@
             }
 
             document.getElementById("optimizeButton").addEventListener("click", function() {
+                var popup = document.getElementById("popup");
+                var blurredBackground = document.getElementById("blurredBackground");
+                popup.style.display = "block";
+                blurredBackground.style.display = "block";
+            });
+
+            document.getElementById("AddContainer").addEventListener("click", function() {
                 var popup = document.getElementById("popup");
                 var blurredBackground = document.getElementById("blurredBackground");
                 popup.style.display = "block";
@@ -497,7 +514,7 @@
                 rowDiv.appendChild(createInput("", "hidden", "temperature" + i, autoFillerBox[i]["Temperature"]));
                 rowDiv.appendChild(createInput("", "hidden", "netWeight" + i, autoFillerBox[i]["Net Weight"]));
 
-                var rotationCell = createInput("Rotation Allowed:", "checkbox", "rotationAllowed" + i);
+                var rotationCell = createInput("Tilt Allowed:", "checkbox", "rotationAllowed" + i);
                 rotationCell.classList.add("checkbox-label");
                 rotationCell.querySelector('input').checked = autoFillerBox[i]["Rotation Allowed"];
                 rowDiv.appendChild(rotationCell);
@@ -576,7 +593,7 @@
                 rowDiv.appendChild(createInput("", "hidden", "temperature" + i, autoFillerBox[i]["Temperature"]));
                 rowDiv.appendChild(createInput("", "hidden", "netWeight" + i, autoFillerBox[i]["Net Weight"]));
 
-                var rotationCell = createInput("Rotation Allowed:", "checkbox", "rotationAllowed" + i);
+                var rotationCell = createInput("Tilt Allowed:", "checkbox", "rotationAllowed" + i);
                 rotationCell.classList.add("checkbox-label");
                 rotationCell.querySelector('input').checked = autoFillerBox[i]["Rotation Allowed"];
                 rowDiv.appendChild(rotationCell);

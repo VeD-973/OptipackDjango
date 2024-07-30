@@ -562,7 +562,7 @@ main {
 .checkbox-label{
     transform: translateY(25px);
     margin-top:20px;
-    padding: 0;
+    padding: 0px;
 }
 .warning-message {
     display: none;
