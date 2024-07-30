@@ -286,117 +286,117 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
 
-        // Function to count boxes by row and color
-        const countBoxesByRowAndColor = (boxes) => {
-            const rowCounts = {};
+        // // Function to count boxes by row and color
+        // const countBoxesByRowAndColor = (boxes) => {
+        //     const rowCounts = {};
             
 
-            boxes.forEach(box => {
-                const row = box.row;
-                const color = box.color;
-                const boxHeight = box.dimensions.height;
+        //     boxes.forEach(box => {
+        //         const row = box.row;
+        //         const color = box.color;
+        //         const boxHeight = box.dimensions.height;
 
-                // Calculate the maximum number of boxes of this height that can fit in the row height
-                const normalizedFactor = Math.floor(containerHeight / boxHeight);
+        //         // Calculate the maximum number of boxes of this height that can fit in the row height
+        //         const normalizedFactor = Math.floor(containerHeight / boxHeight);
 
-                if (!rowCounts[row]) {
-                    rowCounts[row] = {};
-                }
+        //         if (!rowCounts[row]) {
+        //             rowCounts[row] = {};
+        //         }
 
-                if (!rowCounts[row][color]) {
-                    rowCounts[row][color] = 0;
-                }
+        //         if (!rowCounts[row][color]) {
+        //             rowCounts[row][color] = 0;
+        //         }
 
-                // Increment the count by the normalized factor
-                rowCounts[row][color] += (1 / normalizedFactor);
-            });
+        //         // Increment the count by the normalized factor
+        //         rowCounts[row][color] += (1 / normalizedFactor);
+        //     });
 
-            return rowCounts;
-        };
+        //     return rowCounts;
+        // };
 
-        // Function to add count labels for each row
-        const addCountLabels = (rowCounts) => {
-            const loader = new FontLoader();
-            let labelOffsetZ = 0;
+        // // Function to add count labels for each row
+        // const addCountLabels = (rowCounts) => {
+        //     const loader = new FontLoader();
+        //     let labelOffsetZ = 0;
 
-            // Load the font for the labels
-            loader.load('/static/node_modules/three/examples/fonts/optimer_bold.typeface.json', (font) => {
-                Object.keys(rowCounts).forEach(row => {
-                    const rowIndex = parseInt(row);
-                    const rowHeight = rowIndex * containerHeight / Object.keys(rowCounts).length; // Adjust label position by row index
-                    const rowData = rowCounts[row];
-                    // Initial offset for label placement along the z-axis
+        //     // Load the font for the labels
+        //     loader.load('/static/node_modules/three/examples/fonts/optimer_bold.typeface.json', (font) => {
+        //         Object.keys(rowCounts).forEach(row => {
+        //             const rowIndex = parseInt(row);
+        //             const rowHeight = rowIndex * containerHeight / Object.keys(rowCounts).length; // Adjust label position by row index
+        //             const rowData = rowCounts[row];
+        //             // Initial offset for label placement along the z-axis
 
-                    let labelOffsetX = 0; // Offset for label placement along the x-axis
+        //             let labelOffsetX = 0; // Offset for label placement along the x-axis
 
-                    Object.keys(rowData).forEach((color, index, array) => {
-                        const count = Math.round(rowData[color]);
-                        const labelText = `${count}`;
+        //             Object.keys(rowData).forEach((color, index, array) => {
+        //                 const count = Math.round(rowData[color]);
+        //                 const labelText = `${count}`;
                         
-                        // Create the text geometry and material for the count
-                        const countGeometry = new TextGeometry(labelText, {
-                            font: font,
-                            size: 300,
-                            depth: 10,
-                            curveSegments: 12,
-                            bevelEnabled: false
-                        });
+        //                 // Create the text geometry and material for the count
+        //                 const countGeometry = new TextGeometry(labelText, {
+        //                     font: font,
+        //                     size: 300,
+        //                     depth: 10,
+        //                     curveSegments: 12,
+        //                     bevelEnabled: false
+        //                 });
 
-                        const countMaterial = new THREE.MeshBasicMaterial({ color: parseInt(color, 16) || 0xFFFFFF });
+        //                 const countMaterial = new THREE.MeshBasicMaterial({ color: parseInt(color, 16) || 0xFFFFFF });
 
-                        // Create the text mesh for the count
-                        const countMesh = new THREE.Mesh(countGeometry, countMaterial);
+        //                 // Create the text mesh for the count
+        //                 const countMesh = new THREE.Mesh(countGeometry, countMaterial);
 
-                        // Compute the bounding box to center the text
-                        countGeometry.computeBoundingBox();
-                        const countBoundingBox = countGeometry.boundingBox;
-                        const countWidth = countBoundingBox.max.x - countBoundingBox.min.x;
+        //                 // Compute the bounding box to center the text
+        //                 countGeometry.computeBoundingBox();
+        //                 const countBoundingBox = countGeometry.boundingBox;
+        //                 const countWidth = countBoundingBox.max.x - countBoundingBox.min.x;
 
-                        // Set the position of the count text
-                        countMesh.position.set((containerWidth + 360 + labelOffsetX) * aspectWidth, 2500 * aspectHeight, (rowHeight + labelOffsetZ) * aspectDepth);
+        //                 // Set the position of the count text
+        //                 countMesh.position.set((containerWidth + 360 + labelOffsetX) * aspectWidth, 2500 * aspectHeight, (rowHeight + labelOffsetZ) * aspectDepth);
 
-                        // Add the count text to the scene
-                        scene.add(countMesh);
+        //                 // Add the count text to the scene
+        //                 scene.add(countMesh);
 
-                        // Increment the offset for the next label along the x-axis
-                        labelOffsetX += countWidth + 50; // Add distance between each label
+        //                 // Increment the offset for the next label along the x-axis
+        //                 labelOffsetX += countWidth + 50; // Add distance between each label
 
-                        // Check if the current item is not the last one to add a pipe
-                        if (index < array.length - 1) {
-                            // Create the text geometry and material for the pipe
-                            const pipeGeometry = new TextGeometry('|', {
-                                font: font,
-                                size: 300,
-                                depth: 10,
-                                curveSegments: 12,
-                                bevelEnabled: false
-                            });
+        //                 // Check if the current item is not the last one to add a pipe
+        //                 if (index < array.length - 1) {
+        //                     // Create the text geometry and material for the pipe
+        //                     const pipeGeometry = new TextGeometry('|', {
+        //                         font: font,
+        //                         size: 300,
+        //                         depth: 10,
+        //                         curveSegments: 12,
+        //                         bevelEnabled: false
+        //                     });
 
-                            const pipeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); // Black color for the pipe
+        //                     const pipeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); // Black color for the pipe
 
-                            // Create the text mesh for the pipe
-                            const pipeMesh = new THREE.Mesh(pipeGeometry, pipeMaterial);
+        //                     // Create the text mesh for the pipe
+        //                     const pipeMesh = new THREE.Mesh(pipeGeometry, pipeMaterial);
 
-                            // Compute the bounding box to center the pipe
-                            pipeGeometry.computeBoundingBox();
-                            const pipeBoundingBox = pipeGeometry.boundingBox;
-                            const pipeWidth = pipeBoundingBox.max.x - pipeBoundingBox.min.x;
+        //                     // Compute the bounding box to center the pipe
+        //                     pipeGeometry.computeBoundingBox();
+        //                     const pipeBoundingBox = pipeGeometry.boundingBox;
+        //                     const pipeWidth = pipeBoundingBox.max.x - pipeBoundingBox.min.x;
 
-                            // Set the position of the pipe text
-                            pipeMesh.position.set((containerWidth + 360 + labelOffsetX) * aspectWidth, 2500 * aspectHeight, (rowHeight + labelOffsetZ) * aspectDepth);
+        //                     // Set the position of the pipe text
+        //                     pipeMesh.position.set((containerWidth + 360 + labelOffsetX) * aspectWidth, 2500 * aspectHeight, (rowHeight + labelOffsetZ) * aspectDepth);
 
-                            // Add the pipe text to the scene
-                            scene.add(pipeMesh);
+        //                     // Add the pipe text to the scene
+        //                     scene.add(pipeMesh);
 
-                            // Increment the offset for the next label along the x-axis
-                            labelOffsetX += pipeWidth + 50; // Add distance after the pipe
-                        }
-                    });
-                    labelOffsetZ += 250;
-                });
-                // labelOffsetZ += 250;
-            });
-        };
+        //                     // Increment the offset for the next label along the x-axis
+        //                     labelOffsetX += pipeWidth + 50; // Add distance after the pipe
+        //                 }
+        //             });
+        //             labelOffsetZ += 250;
+        //         });
+        //         // labelOffsetZ += 250;
+        //     });
+        // };
 
 
         // Load coordinates from JSON file and create boxes
@@ -410,10 +410,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     createSmallBoxesFromCoordinates(boxes);
 
                     // Calculate box counts per row
-                    const rowCounts = countBoxesByRowAndColor(boxes);
+                    // const rowCounts = countBoxesByRowAndColor(boxes);
 
                     // Add count labels to the scene
-                    addCountLabels(rowCounts);
+                    // addCountLabels(rowCounts);
                 }
 
                 if (lastBoxYItem) {
@@ -572,7 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modelContainer.add(model);
             // Create a secondary scene for the fixed model
             const fixedScene = new THREE.Scene();
-            fixedScene.background = new THREE.Color('rgba(255, 255, 255, 0)');
+            fixedScene.background = new THREE.Color('rgba(255, 255, 255, 1)');
 
             // Adjust the orthographic camera to the model
 

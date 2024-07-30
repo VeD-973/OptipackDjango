@@ -14,6 +14,7 @@ html, body {
     margin-right: 10px;
     margin-bottom: 20px;
     margin-top: 20px;
+    width: 100%;
 
 }
 
@@ -21,7 +22,7 @@ html, body {
     /* font-weight: bold; */
     flex: 1 0 1%;
     min-width: 90px;
-    margin-top: 35px;
+    margin-top: 25px;
     margin-left: 40px;
 }
 
@@ -79,7 +80,7 @@ html, body {
 }
 
 .container-type-select {
-    width: 200px;
+    width: 400px;
 }
 
 
@@ -172,6 +173,8 @@ html, body {
 body {
     display: flex;
     flex: 1;
+    overflow: hidden;
+
     height: 100%;
 }
 
@@ -482,7 +485,9 @@ main {
 .container-row{
     /* padding: 0; */
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    max-width: 100%;
+    max-height: 50px;
     /* gap:4px; */
 }
 
@@ -499,13 +504,14 @@ main {
 }
 
 .container-type-select {
-    width: 70%;
-    padding: 10px;
+    width: 80%;
+    padding: 5px;
     border: 1px solid #ccc;
     border-radius: 6px;
     font-size: 16px;
     box-sizing: border-box;
-    transform: translate(200px,-35px);
+    margin-left: 2%;
+    /* transform: translate(200px,-35px); */
 }
 
 .container-type-container {
@@ -521,15 +527,25 @@ main {
     /* margin-top: -2px; */
     padding: 0;
 }
-.container-type-image{
+
+.container-type-label{
+    width: 50%;
+    height:20%;
+}
+.container-image{
     height: 150px;
     width: 300px;
-    margin-left: -70px;
+    /* margin-left: -70px; */
     /* transform: translateX(-200px); */
 }
 
+.container-info{
+    margin-left: 35%;
+    margin-top:-5%;
+}
+
 .container-dimensions-label{
-    transform: translateX(-200px);
+    margin-left: 10%;
 }
 .container-details-container {
     display: flex;
@@ -544,7 +560,8 @@ main {
     width: 10%;
 }
 .checkbox-label{
-    transform: translateY(27px);
+    transform: translateY(25px);
+    margin-top:20px;
     padding: 0;
 }
 .warning-message {

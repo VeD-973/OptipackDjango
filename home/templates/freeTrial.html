@@ -61,6 +61,85 @@
             justify-content: center;
             gap: 10px; /* Add some space between buttons */
         }
+        /* Ensure buttons and their contents are flex containers */
+        button.collapsible {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            outline: none;
+            font-size: 20px;
+            line-height: 32px;
+            font-weight: 700;
+            transition: 0.4s;
+            height: 60px; /* Increase height */
+            border-radius:10px;
+            
+            
+        }
+
+        /* Ensure images within the buttons are not skewed */
+        button.collapsible .icon {
+            height: 20px;
+            width: 20px;
+        }
+
+        /* Optional: Adjust the button padding and margins for better layout */
+        button.collapsible {
+            padding: 10px 15px;
+            
+        }
+
+        /* Ensure the icons remain responsive */
+        button.collapsible img.icon {
+            height: auto;
+            width: 20px; /* Adjust as needed */
+        }
+
+        /* Media queries for responsiveness on smaller screens */
+        @media (max-width: 768px) {
+            button.collapsible {
+                padding: 8px 10px;
+            }
+            button.collapsible img.icon {
+                width: 16px; /* Adjust as needed */
+            }
+        }
+        .center-button {
+            display: block;
+            margin: 20px auto;
+            padding: 15px 30px;
+            font-size: 18px;
+            width: 180px; /* Adjust width as needed */
+        }
+        /* Adjust the number of containers input and align its label */
+        .num-containers-input {
+            max-height: 30px; /* Reduce the height */
+            padding: 5px; /* Adjust padding for a smaller input */
+            margin-top: 10px; /* Adjust margin to align with the label */
+        }
+
+        .label-and-input {
+            display: flex;
+            align-items: center;
+        }
+
+        .label-and-input .num {
+            margin-right: 10px; /* Adjust spacing between label and input */
+            margin-top: 20px;
+        }
+        .small-button {
+            padding: 10px 20px; /* Smaller padding for smaller button size */
+            font-size: 16px; /* Smaller font size */
+            width: 140px; /* Adjust width as needed */
+        }
+        label.num{
+            margin-top:15px;
+        }
+        body{
+            overflow: hidden;
+        }
+
       
     </style>
 </head>
@@ -98,40 +177,38 @@
 
                 <button type="button" class="collapsible" id="addLoadDetailsButton">
                     Add load details
-                    <img src="{% static 'images/unlock.png' %}" alt="Lock Icon" id="addLoadDetailsIcon" style="height: 20px; width: 20px;margin-left:83%;transform: translateY(5px);">
+                    <img src="{% static 'images/unlock.png' %}" alt="Lock Icon" id="addLoadDetailsIcon" class="icon">
                 </button>
                 <div class="content">
-                    
                     <input type="hidden" id="numTypes" name="numTypes" value="3">
-
                     <div id="productForm">
                         <!-- Prefilled SKUs will be generated here -->
                     </div>
                     <div class="SKU-cta">
-                        <button type="button" class="btn-apply" style="margin:0 20px" onclick="addSku()">Add SKU</button>
+                        <button type="button" class="btn-apply" onclick="addSku()">Add SKU</button>
                         <button type="button" class="btn-apply" onclick="finishLoading()">Submit</button>
                     </div>
                 </div>
 
-                <button type="button" class="collapsible" id="addContainerDetails" onclick="checkLoadDetailsCompletion()">Add Container details
-                    <img src="{% static 'images/lock.png' %}" alt="Lock Icon" id="addContainerDetailsIcon" style="height: 20px; width: 20px;margin-left:78.5%;transform: translateY(5px);;">
+                <button type="button" class="collapsible" id="addContainerDetails">
+                    Add Container details
+                    <img src="{% static 'images/lock.png' %}" alt="Lock Icon" id="addContainerDetailsIcon" class="icon">
                 </button>
                 <div class="content">
                     <div id="containerDetails" class="container-details-container">
                         <input type="hidden" id="totalContainers" name="totalContainers" value="1">
-                        
-                        <label for="numContainers" class="num" style=" padding: 0;margin:0;transform: translateY(20px);">Number of Containers:</label>
-                        <input type="number" id="numContainers" name="numContainers" min="1" max="2" value="1" class="num-containers-input" style="max-height: 40px;margin-top: 14px;">
-                        
+                        <label for="numContainers" class="num">Number of Containers:</label>
+                        <input type="number" id="numContainers" name="numContainers" min="1" max="2" value="1" class="num-containers-input">
                         <div id="typeInputs" class="container-types">
                             <!-- Dynamic inputs for the container type will be generated here -->
                         </div>
                     </div>
-                    <button type="button" class="btn-apply" onclick="finishLoadingContainer()" style="margin-top: 10px;margin-left:42%;font-size: 16px;width: 15%;">Submit</button>
+                    <button type="button" class="btn-apply small-button center-button" onclick="finishLoadingContainer()">Submit</button>
                 </div>
 
-                <button type="button" class="collapsible" id="optimizeButton">Add Optimization constraints
-                    <img src="{% static 'images/lock.png' %}" alt="Lock Icon" id="addLoadDetailsIcon" style="height: 20px; width: 20px;margin-left:72.4%;transform: translateY(5px);">
+                <button type="button" class="collapsible" id="optimizeButton">
+                    Add Optimization constraints
+                    <img src="{% static 'images/lock.png' %}" alt="Lock Icon" class="icon">
                 </button>
                 <div class="content">
                     <!-- Add optimization constraints content here if needed -->
@@ -141,11 +218,11 @@
                 <div id="popup" class="popup">
                     <div class="popup-content">
                         <div class="popup-text">
-                            <h1 style="font-size: 40px;">Upgrade to the Premium Version</h2>
-                            <p style="font-size: 20px;">Explore the premium features that can transform your workflow and productivity.</p>
+                            <h1>Upgrade to the Premium Version</h1>
+                            <p>Explore the premium features that can transform your workflow and productivity.</p>
                             <div class="popup-buttons">
-                                <a href="{% url 'additionalInformation' %}" class="btn-apply" style=" text-decoration: none;">Upgrade Now</a>
-                                <a href="{% url 'enquire' %}" class="btn-cancel" style=" text-decoration: none;">Learn More</a>
+                                <a href="{% url 'additionalInformation' %}" class="btn-apply">Upgrade Now</a>
+                                <a href="{% url 'enquire' %}" class="btn-cancel">Learn More</a>
                             </div>
                         </div>
                         <div class="popup-image">
@@ -155,10 +232,12 @@
                     </div>
                 </div>
                 
-                <button type="submit" id="final" class="btn-apply" style="margin-left:40%; margin-top: 5%;font-size: 20px;width: 20%;">Optimize</button>
+                <button type="submit" id="final" class="btn-apply center-button">Optimize</button>
             </form>
         </div>
     </div>
+
+        
     <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
 
     <script>
@@ -208,6 +287,13 @@
         //     return confirmationMessage; // Gecko, WebKit, Chrome <34
         // });
 
+        let colorIndex = 0; // Counter to keep track of the current color index
+        const colors = [
+            'rgba(244, 67, 54, 1)',  // Color 1
+            'rgba(76, 175, 80, 1)',  // Color 2
+            'rgba(33, 150, 243, 1)'  // Color 3
+        ];
+
             
     function initializeColorPicker(pickerId, colorInputId) {
         const pickr = Pickr.create({
@@ -235,7 +321,7 @@
                 'rgba(96, 125, 139, 1)',
                 'rgba(0, 0, 0, 1)'
             ],
-            default: 'rgba(244, 67, 54, 1)',
+            default: colors[colorIndex],
             components: {
                 // Main components
                 preview: true,
@@ -247,6 +333,11 @@
                 }
             }
         });
+        const currColor = document.getElementById(colorInputId);
+        // console.log(currColor)
+        currColor.value = colors[colorIndex];
+        // Update the counter to the next color
+        colorIndex = (colorIndex + 1) % colors.length;
 
         pickr.on('save', (color, instance) => {
             const rgbaColor = color.toRGBA().toString();
@@ -310,6 +401,31 @@
             return isValid;
         }
 
+        function checkDuplicateColors() {
+            var colorInputs = document.querySelectorAll('input[name^="color"]');
+            var colorValues = [];
+
+            function roundRGBA(rgba) {
+                return rgba.replace(/(\d+(\.\d+)?)/g, function(match) {
+                    return Math.round(parseFloat(match));
+                });
+            }
+
+            for (var i = 0; i < colorInputs.length; i++) {
+                var colorValue = colorInputs[i].value.trim();
+                var roundedColorValue = roundRGBA(colorValue);
+
+                if (colorValues.includes(roundedColorValue)) {
+                    alert('Duplicate colors detected. Please select unique colors for each SKU.');
+                    colorInputs[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return false;
+                }
+                colorValues.push(roundedColorValue);
+            }
+            return true;
+        }
+
+
 
         function finishLoadingContainer(){
             var addContainerDetailsButton = document.getElementById("addContainerDetails");
@@ -331,20 +447,17 @@
         function finishLoading() {
             var addLoadDetailsButton = document.getElementById("addLoadDetailsButton");
             var addLoadDetailsIcon = document.getElementById("addLoadDetailsIcon");
-            
-         
-
             var val = validateForm();
-            
+            var uniqueColors = checkDuplicateColors();
 
             var content = addLoadDetailsButton.nextElementSibling;
-            if(val){
+            if (val && uniqueColors) {
                 content.style.display = "none";
                 addLoadDetailsIcon.src = "{% static 'images/tick.png' %}";
                 addContainerDetailsIcon.src = "{% static 'images/unlock.png' %}";
                 addLoadDetailsButton.style.backgroundColor = '#cffbbf'
+                document.getElementById("warningMessage").style.display = "none";
             }
-            document.getElementById("warningMessage").style.display = "none";
         }
 
         function addSku() {
@@ -374,10 +487,10 @@
                 skuInput.querySelector('input').required = true;
                 rowDiv.appendChild(skuInput);
 
-                rowDiv.appendChild(createInput("Gross Weight:", "text", "grossWeight" + i, autoFillerBox[i]["Gross Weight"]));
-                rowDiv.appendChild(createInput("Length:", "text", "length" + i, autoFillerBox[i]["Length"]));
-                rowDiv.appendChild(createInput("Width:", "text", "width" + i, autoFillerBox[i]["Width"]));
-                rowDiv.appendChild(createInput("Height:", "text", "height" + i, autoFillerBox[i]["Height"]));
+                rowDiv.appendChild(createInput("Gross Weight (KGs):", "text", "grossWeight" + i, autoFillerBox[i]["Gross Weight"]));
+                rowDiv.appendChild(createInput("Length (mm):", "text", "length" + i, autoFillerBox[i]["Length"]));
+                rowDiv.appendChild(createInput("Width (mm):", "text", "width" + i, autoFillerBox[i]["Width"]));
+                rowDiv.appendChild(createInput("Height  (mm):", "text", "height" + i, autoFillerBox[i]["Height"]));
                 rowDiv.appendChild(createInput("Number of Cases:", "text", "numberOfCases" + i, autoFillerBox[i]["Number of Cases"]));
 
                 rowDiv.appendChild(createInput("", "hidden", "volume" + i, autoFillerBox[i]["Volume"]));
@@ -400,7 +513,6 @@
                 form.appendChild(rowDiv);
                 initializeColorPicker(colorPickerDiv.id, colorInput.id);
             }
-
         }
 
         function closePopup() {
@@ -454,10 +566,10 @@
                 skuInput.querySelector('input').required = true;
                 rowDiv.appendChild(skuInput);
 
-                rowDiv.appendChild(createInput("Gross Weight:", "text", "grossWeight" + i, autoFillerBox[i]["Gross Weight"]));
-                rowDiv.appendChild(createInput("Length:", "text", "length" + i, autoFillerBox[i]["Length"]));
-                rowDiv.appendChild(createInput("Width:", "text", "width" + i, autoFillerBox[i]["Width"]));
-                rowDiv.appendChild(createInput("Height:", "text", "height" + i, autoFillerBox[i]["Height"]));
+                rowDiv.appendChild(createInput("Gross Weight (KGs):", "text", "grossWeight" + i, autoFillerBox[i]["Gross Weight"]));
+                rowDiv.appendChild(createInput("Length (mm):", "text", "length" + i, autoFillerBox[i]["Length"]));
+                rowDiv.appendChild(createInput("Width (mm):", "text", "width" + i, autoFillerBox[i]["Width"]));
+                rowDiv.appendChild(createInput("Height  (mm):", "text", "height" + i, autoFillerBox[i]["Height"]));
                 rowDiv.appendChild(createInput("Number of Cases:", "text", "numberOfCases" + i, autoFillerBox[i]["Number of Cases"]));
 
                 rowDiv.appendChild(createInput("", "hidden", "volume" + i, autoFillerBox[i]["Volume"]));
@@ -590,94 +702,96 @@
         ];
 
         function generateTypeInputs() {
-            var totalContainers = document.getElementById("totalContainers").value;
-            var typeInputsDiv = document.getElementById("typeInputs");
+    var totalContainers = document.getElementById("totalContainers").value;
+    var typeInputsDiv = document.getElementById("typeInputs");
+    var contentInfoDiv = document.getElementById("containerDetails");
 
-            typeInputsDiv.innerHTML = "";
+    typeInputsDiv.innerHTML = "";
 
-            for (var i = 0; i < totalContainers; i++) {
-                var containerDiv = document.createElement("div");
-                containerDiv.classList.add("container-row");
-                // var tyc = document.createElement("dic")
-                // containerDiv.classList.add("container-type-container");
+    for (var i = 0; i < totalContainers; i++) {
+        var containerDiv = document.createElement("div");
+        containerDiv.classList.add("container-row");
 
-                var typeLabel = document.createElement("label");
-                typeLabel.textContent = "Type of Container " + (i + 1) + ":";
-                typeLabel.classList.add("container-type-label");
-                containerDiv.appendChild(typeLabel);
+        var typeLabel = document.createElement("label");
+        typeLabel.textContent = "Type of Container " + (i + 1) + ":";
+        typeLabel.classList.add("container-type-label");
+        containerDiv.appendChild(typeLabel);
 
-                var typeSelect = document.createElement("select");
-                typeSelect.name = "containerType" + (i + 1);
-                typeSelect.required = true;
-                typeSelect.classList.add("container-type-select");
-                typeSelect.onchange = updateTypeOptions;
-                containerDiv.appendChild(typeSelect);
-                var counter=0;
-                for (var type in truck_specs) {
+        var typeSelect = document.createElement("select");
+        typeSelect.name = "containerType" + (i + 1);
+        typeSelect.required = true;
+        typeSelect.classList.add("container-type-select");
+        typeSelect.onchange = updateTypeOptions;
+        containerDiv.appendChild(typeSelect);
 
-                    var option = document.createElement("option");
-                    option.value = type;
-                    option.text = type;
-                    // option.style.visibility="hidden";
-
-                    typeSelect.appendChild(option);
-
-                }
-
-                var dimensionsLabel = document.createElement("label");
-                dimensionsLabel.classList.add("container-dimensions-label");
-                containerDiv.appendChild(dimensionsLabel);
-
-                var imageLabel = document.createElement("label");
-                imageLabel.classList.add("container-type-image");
-                containerDiv.appendChild(imageLabel);
-
-                typeInputsDiv.appendChild(containerDiv);
-               
-            }
-
+        for (var type in truck_specs) {
+            var option = document.createElement("option");
+            option.value = type;
+            option.text = type;
+            typeSelect.appendChild(option);
         }
 
-        function updateTypeOptions(event) {
-            var selectElement = event.target;
-            var selectedOption = selectElement.value;
+        var containerType = typeSelect.value;
+        var containerData = truck_specs[containerType];
 
-            var dimensionsLabel = selectElement.nextSibling;
-            var imageLabel = dimensionsLabel.nextSibling;
+        // Append the container input row to the typeInputsDiv
+        typeInputsDiv.appendChild(containerDiv);
 
-            var customInputs = dimensionsLabel.parentElement.querySelectorAll('.custom-dimensions');
-            customInputs.forEach(input => input.remove());
+        // Create a div to hold the image and dimensions label
+        var infoDiv = document.createElement("div");
+        infoDiv.classList.add("container-info");
+        infoDiv.style.textAlign = "center"; // Center align content within this div
 
-            var dimensions = getTruckDimensions(selectedOption);
-            if (dimensions) {
-                dimensionsLabel.textContent = dimensions;
-                var specs = truck_specs[selectedOption];
-                if (specs && specs.image) {
-                    var imageTag = '<img src="' + specs.image + '" alt="' + selectedOption + ' Image" class="container-type-image">';
-                    imageLabel.innerHTML = imageTag;
-                } else {
-                    imageLabel.innerHTML = "";
-                }
-            } else {
-                // dimensionsLabel.textContent = "Custom Dimensions: Please provide your own dimensions.";
-                imageLabel.innerHTML = "";
-                dimensionsLabel="";
+        // Create and add the container image to the content-info div
+        var image = document.createElement("img");
+        image.id = "containerImage" + (i + 1);
+        image.src = containerData.image; // Set the image source
+        image.alt = "Container Image " + (i + 1);
+        image.classList.add("container-image");
+        infoDiv.appendChild(image);
 
-                // var customDimensionsDiv = document.createElement("div");
-                // customDimensionsDiv.classList.add("input-row");
-                // customDimensionsDiv.classList.add("custom-dimensions");
+        // Create and add the dimensions label to the content-info div
+        var dimensionsLabel = document.createElement("label");
+        dimensionsLabel.id = "containerDimensions" + (i + 1);
+        dimensionsLabel.textContent = "Dimensions (LxWxH): " + containerData.length_container + " x " + containerData.width_container + " x " + containerData.height_container;
+        dimensionsLabel.classList.add("container-dimensions-label");
+        infoDiv.appendChild(dimensionsLabel);
 
-                // customDimensionsDiv.appendChild(createInput("Length:", "text", "customLength"));
-                // customDimensionsDiv.appendChild(createInput("Width:", "text", "customWidth"));
-                // customDimensionsDiv.appendChild(createInput("Height:", "text", "customHeight"));
-                // customDimensionsDiv.appendChild(createInput("Max Capacity:", "text", "customMaxCapacity"));
-                // customDimensionsDiv.style.marginTop = '-10%';
-                // customDimensionsDiv.style.transform = '0,-5%';
+        // Append the infoDiv to the content-info div
+        contentInfoDiv.appendChild(infoDiv);
+    }
+}
 
+function updateTypeOptions(event) {
+    var selectElement = event.target;
+    var selectedOption = selectElement.value;
 
-                // dimensionsLabel.parentElement.appendChild(customDimensionsDiv);
-            }
+    // Find the closest container-row div
+    var containerRowDiv = selectElement.closest(".container-row");
+
+    // Determine the index of the container
+    var index = Array.prototype.indexOf.call(containerRowDiv.parentElement.children, containerRowDiv) + 1;
+
+    // Get the selected container type's data from truck_specs
+    var containerData = truck_specs[selectedOption];
+
+    // Update the container image in the content-info div
+    if (containerData && containerData.image) {
+        var image = document.getElementById("containerImage" + index);
+        if (image) {
+            image.src = containerData.image; // Update the image source
         }
+    }
+
+    // Update the dimensions label in the content-info div
+    if (containerData) {
+        var dimensionsLabel = document.getElementById("containerDimensions" + index);
+        if (dimensionsLabel) {
+            dimensionsLabel.textContent = "Dimensions (LxWxH): " + containerData.length_container + " x " + containerData.width_container + " x " + containerData.height_container;
+        }
+    }
+}
+
 
         function getTruckDimensions(selectedOption) {
             var specs = truck_specs[selectedOption];

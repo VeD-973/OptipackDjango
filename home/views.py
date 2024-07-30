@@ -392,6 +392,8 @@ def freeOutput(request):
         # print(df_ht)
         df_ht = df_ht.to_html(classes='data')
         container_indices = range(1,num_containers+1)
+        # print(threed_boxes)
+        # print(container_inf)
         context = {
             'packaging_density': packd_list,
             'vol_occ_curr': vol_curr_list,
