@@ -409,6 +409,7 @@ def freeOutput(request):
             'df':df_ht
             
         }
+        # print(context)
         # print(num_placed)
         return render(request, 'freeOutput.html', context)  # Redirect to a success page
     return render(request, 'freeOutput.html')
